@@ -20,17 +20,25 @@ public class UserService {
 	}
 	
 	//Find all users and then return them as DTOs
-	public List<UserDTO> getAllUsers() {
-		List<User> users = userRepository.findAll();
-		return users.stream()
-				.map(UserMapper.INSTANCE::userToUserDTO)
-				.collect(Collectors.toList());
+//	public List<UserDTO> getAllUsers() {
+//		List<User> users = userRepository.findAll();
+//		return users.stream()
+//				.map(UserMapper.INSTANCE::toUserDTO)
+//				.collect(Collectors.toList());
+//	}
+	public List<User> getAllUsers(){
+		return userRepository.findAll();
 	}
 	
-	public UserDTO createUser(UserDTO userDTO) {
-		User user = UserMapper.INSTANCE.userDTOToUser(userDTO);
+//	public UserDTO createUser(UserDTO userDTO) {
+//		User user = UserMapper.INSTANCE.toUser(userDTO);
+//		User savedUser = userRepository.save(user);
+//		return UserMapper.INSTANCE.toUserDTO(savedUser);
+//	}
+	
+	public User createUser(User user) {
 		User savedUser = userRepository.save(user);
-		return UserMapper.INSTANCE.userToUserDTO(savedUser);
+		return savedUser;
 	}
 	
 }
