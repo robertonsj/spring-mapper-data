@@ -19,7 +19,7 @@ public class UserService {
 		this.userRepository = userRepository;
 	}
 	
-	//Take all users and return their DTO
+	//Find all users and then return them as DTOs
 	public List<UserDTO> getAllUsers() {
 		List<User> users = userRepository.findAll();
 		return users.stream()
