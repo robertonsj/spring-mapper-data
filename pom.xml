@@ -54,32 +54,35 @@
 		</dependency>
 		
 		
-		 <!-- Lombok (Auto-generates Getters, Setters, etc.) -->
-	    <dependency>
-	        <groupId>org.projectlombok</groupId>
-	        <artifactId>lombok</artifactId>
-	        <scope>provided</scope>
-	    </dependency>
-	    <dependency>
-	        <groupId>org.projectlombok</groupId>
-	        <artifactId>lombok-mapstruct-binding</artifactId>
-	        <version>0.2.0</version>
-	        <scope>provided</scope>
-	    </dependency>
-		
-		<!-- MapStruct (For Object Mapping) -->
+		<!-- MapStruct (API For Object Mapping) -->
 	    <dependency>
 	        <groupId>org.mapstruct</groupId>
 	        <artifactId>mapstruct</artifactId>
 	        <version>1.5.5.Final</version>
 	    </dependency>
 	
-	    <dependency>
+		<!-- MapStruct Processor: must be provided for Maven -->
+	    <dependency> 
 	        <groupId>org.mapstruct</groupId>
 	        <artifactId>mapstruct-processor</artifactId>
 	        <version>1.5.5.Final</version>
 	        <scope>provided</scope>
 	    </dependency>
+	    
+	     <!-- Lombok (Auto-generates Getters, Setters, etc.) -->
+	    <dependency>
+	        <groupId>org.projectlombok</groupId>
+	        <artifactId>lombok</artifactId>
+	        <scope>provided</scope>
+	    </dependency>
+	    
+	    <!-- Lombok + MapStruct Integration -->
+	    <dependency>
+	        <groupId>org.projectlombok</groupId>
+	        <artifactId>lombok-mapstruct-binding</artifactId>
+	        <version>0.2.0</version>
+	        <scope>provided</scope>
+    	</dependency>
 		
 		<!-- Spring Boot Starter Test (Optional for Testing) -->
 		<dependency>
@@ -110,10 +113,14 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
+					<source>21</source>
 					<annotationProcessorPaths>
 						<path>
+							<groupId>org.mapstruct</groupId>
+	                        <artifactId>mapstruct-processor</artifactId>
+	                        <version>1.5.5.Final</version><!--
 							<groupId>org.projectlombok</groupId>
-							<artifactId>lombok</artifactId>
+							<artifactId>lombok</artifactId> -->
 						</path>
 					</annotationProcessorPaths>
 				</configuration>
