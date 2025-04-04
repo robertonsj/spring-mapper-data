@@ -49,5 +49,5 @@ Thumbs.db
 
 # Ignore environmental variables secrets
 .env
-application.properties
+*.properties
 application.yml
