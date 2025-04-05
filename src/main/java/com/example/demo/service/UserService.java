@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.demo.dto.UserDTO;
 import com.example.demo.entity.User;
+import com.example.demo.exception.UserNotFoundException;
 import com.example.demo.mapper.UserMapper;
 import com.example.demo.repository.UserRepository;
 
@@ -26,10 +27,16 @@ public class UserService {
 	//Find all users and then return them as DTOs
 	public List<UserDTO> getAllUsers() {
 		List<User> users = userRepository.findAll();
-		System.out.println("userRepository: " + users.size());
 		return users.stream()
 				.map(userMapper::toUserDTO)
 				.collect(Collectors.toList());
+	}
+	
+	public UserDTO getUserById(Long id) {
+		User user = userRepository.findById(id)
+				.orElseThrow(() -> new UserNotFoundException(
+						"User not found with ID: " + id));
+		return userMapper.toUserDTO(user);
 	}
 
 	
@@ -38,6 +45,26 @@ public class UserService {
 		User savedUser = userRepository.save(user);	
 		return userMapper.toUserDTO(savedUser);
 	}
+	
+	public void deleteUser(Long id) {
+		User user = userRepository.findById(id)
+				.orElseThrow(() -> new UserNotFoundException(
+						"User not found with ID: " + id));
+		userRepository.delete(user);
+	}
+	
+	public UserDTO updateUser(Long id, UserDTO userDto) {
+		User user = userRepository.findById(id)
+				.orElseThrow(() -> new UserNotFoundException(
+						"User not found with ID: " + id));
+		user.setName(userDto.getName());
+		user.setEmail(userDto.getEmail());
+		User savedUser = userRepository.save(user);
+		return userMapper.toUserDTO(savedUser);
+				
+	}
+	
+	
 	
 
 	
