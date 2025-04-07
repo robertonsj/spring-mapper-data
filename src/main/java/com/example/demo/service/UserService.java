@@ -59,8 +59,8 @@ public class UserService {
 						"User not found with ID: " + id));
 		user.setName(userDto.getName());
 		user.setEmail(userDto.getEmail());
-		User savedUser = userRepository.save(user);
-		return userMapper.toUserDTO(savedUser);
+		User updatedUser = userRepository.save(user);
+		return userMapper.toUserDTO(updatedUser);
 				
 	}
 	

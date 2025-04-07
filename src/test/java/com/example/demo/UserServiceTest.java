@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.when;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -52,6 +53,24 @@ public class UserServiceTest {
 	        assertEquals(1, dtoList.size());
 	        assertEquals("John Doe", dtoList.get(0).getName());
 	        
+	    }
+	    
+	    @Test
+	    void testGetUserById() {
+	    	UserDTO userDTO = new UserDTO();
+	        userDTO.setName("John Doe");
+	        userDTO.setId(1L);
+
+	        User user = new User();
+	        user.setName("John Doe");
+	        user.setId(1L);
+	        
+	        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+	        when(userMapper.toUserDTO(user)).thenReturn(userDTO);
+	        
+	        UserDTO foundUser = userService.getUserById(1L);
+	        assertNotNull(foundUser);
+	        assertEquals("John Doe", foundUser.getName());
 	    }
 
 	    @Test
