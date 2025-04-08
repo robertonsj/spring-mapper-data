@@ -3,7 +3,12 @@ package com.example.demo;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -16,6 +21,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.example.demo.dto.UserDTO;
 import com.example.demo.entity.User;
+import com.example.demo.exception.UserNotFoundException;
 import com.example.demo.mapper.UserMapper;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.service.UserService;
@@ -91,5 +97,38 @@ public class UserServiceTest {
 	        UserDTO result = userService.createUser(userDTO);
 	        assertNotNull(result);
 	        assertEquals("John Doe", result.getName());
+	    }
+	    
+	    @Test
+	    void testDeleteUser_successful() {
+	    	Long id = 1L;
+	    	User user = new User();
+	    	user.setId(id);
+	        user.setName("John Doe");
+	        user.setEmail("test@example.com");
+	        
+	        //When
+	        when(userRepository.findById(id)).thenReturn(Optional.of(user));
+	        //Then
+	        userService.deleteUser(id);
+	        
+	        verify(userRepository).findById(id);
+	        verify(userRepository).delete(user);
+	        
+	    }
+	    
+	    @Test
+	    void testDeleteUser_userNotFound() {
+	    	Long id = 2L;
+	    	
+	    	//When
+	    	when(userRepository.findById(id)).thenReturn(Optional.empty());
+	    	//Then
+	    	assertThrows(UserNotFoundException.class, () -> {
+	    		userService.deleteUser(id);
+	    	});
+	    	
+	    	verify(userRepository).findById(id);
+	    	verify(userRepository, never()).delete(any());
 	    }
 }
