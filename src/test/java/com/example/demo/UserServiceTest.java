@@ -131,4 +131,62 @@ public class UserServiceTest {
 	    	verify(userRepository).findById(id);
 	    	verify(userRepository, never()).delete(any());
 	    }
+	    
+	    @Test
+	    void testUpdateUser_successful() {
+	    	Long userId = 1L;
+	    	
+	    	User existingUser = new User();
+	        existingUser.setId(userId);
+	        existingUser.setName("Old Name");
+	        existingUser.setEmail("old@example.com");
+	        
+	        UserDTO updatedDTO = new UserDTO();
+	        updatedDTO.setName("New Name");
+	        updatedDTO.setEmail("new@example.com");
+	        
+	        User updatedUser = new User();
+	        updatedUser.setId(userId);
+	        updatedUser.setName("New Name");
+	        updatedUser.setEmail("new@example.com");
+	        
+	        UserDTO returnedDTO = new UserDTO();
+	        returnedDTO.setId(userId);
+	        returnedDTO.setName("New Name");
+	        returnedDTO.setEmail("new@example.com");
+	        
+	        when(userRepository.findById(userId)).thenReturn(Optional.of(existingUser));
+	        when(userRepository.save(existingUser)).thenReturn(updatedUser);
+	        when(userMapper.toUserDTO(updatedUser)).thenReturn(returnedDTO);
+	        
+	        UserDTO result = userService.updateUser(userId, updatedDTO);
+	        
+	        assertNotNull(result);
+	        assertEquals("New Name", result.getName());
+	        assertEquals("new@example.com", result.getEmail());
+	        
+	        verify(userRepository).findById(userId);
+	        verify(userRepository).save(updatedUser);
+	        verify(userMapper).toUserDTO(updatedUser);
+	        
+	    }
+	    
+	    @Test
+	    void testUpdateUser_userNotFound() {
+	    	Long userId = 2L;
+	    	UserDTO userDTO = new UserDTO();
+	        userDTO.setName("Test");
+	        userDTO.setEmail("test@example.com");
+	    	
+	    	when(userRepository.findById(userId)).thenReturn(Optional.empty());
+	    	
+	    	assertThrows(UserNotFoundException.class, () -> {
+	    		userService.updateUser(userId, userDTO);
+	    	});
+	    	
+	    	verify(userRepository).findById(userId);
+	    	verify(userRepository, never()).save(any());
+	    	verify(userMapper, never()).toUserDTO(any());
+	    	
+	    }
 }
