@@ -51,3 +51,8 @@ Thumbs.db
 .env
 *.properties
 application.yml
+
+# Database files
+/data/
+*.h2.db
+*.mv.db

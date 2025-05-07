@@ -41,11 +41,8 @@ public class UserServiceTest {
 	    @Test
 	    void testGetAllUsers() {
 	    	
-	    	User user = new User();
-	        user.setName("John Doe");
-	        
-	        UserDTO userDTO = new UserDTO();
-	        userDTO.setName("John Doe");
+	    	User user = new User("John Doe", "test@example.com");
+	        UserDTO userDTO = new UserDTO("John Doe", "test@example.com");
 	    	
 	    	//Mock behavior of userRepository
 	    	List<User> userList = Collections.singletonList(user);
@@ -62,13 +59,9 @@ public class UserServiceTest {
 	    }
 	    
 	    @Test
-	    void testGetUserById() {
-	    	UserDTO userDTO = new UserDTO();
-	        userDTO.setName("John Doe");
-	        userDTO.setId(1L);
-
-	        User user = new User();
-	        user.setName("John Doe");
+	    void testGetUserById_successul() {
+	    	UserDTO userDTO = new UserDTO("John Doe", "test@example.com");
+	        User user = new User("John Doe", "test@example.com");
 	        user.setId(1L);
 	        
 	        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
@@ -78,17 +71,21 @@ public class UserServiceTest {
 	        assertNotNull(foundUser);
 	        assertEquals("John Doe", foundUser.getName());
 	    }
+	    
+	    @Test
+	    void testGetUserById_userNotFound() {
+	    	// Mock user not found behavior
+	    	when(userRepository.findById(2L)).thenReturn(Optional.empty());
+	    	
+	    	assertThrows(UserNotFoundException.class,
+	    			() -> userService.getUserById(2L));
+	    }
 
 	    @Test
-	    void testCreateUser() {
-	    	UserDTO userDTO = new UserDTO();
-	        userDTO.setName("John Doe");
-
-	        User user = new User();
-	        user.setName("John Doe");
-
-	        User savedUser = new User();
-	        savedUser.setName("John Doe");
+	    void testCreateUser_successful() {
+	    	UserDTO userDTO = new UserDTO("John Doe", "test@example.com");
+	        User user = new User("John Doe", "test@example.com" );
+	        User savedUser = new User("John Doe", "test@example.com");
 	        
 	        when(userMapper.toUser(userDTO)).thenReturn(user); // Ensure mapping works
 	        when(userRepository.save(user)).thenReturn(savedUser);
@@ -100,12 +97,16 @@ public class UserServiceTest {
 	    }
 	    
 	    @Test
+	    void testCreateUser_withNullDTO() {
+	    	assertThrows(NullPointerException.class, 
+	    			() -> userService.createUser(null));
+	    }
+	    
+	    @Test
 	    void testDeleteUser_successful() {
 	    	Long id = 1L;
-	    	User user = new User();
+	    	User user = new User("John Doe", "test@example.com" );
 	    	user.setId(id);
-	        user.setName("John Doe");
-	        user.setEmail("test@example.com");
 	        
 	        //When
 	        when(userRepository.findById(id)).thenReturn(Optional.of(user));
@@ -136,24 +137,16 @@ public class UserServiceTest {
 	    void testUpdateUser_successful() {
 	    	Long userId = 1L;
 	    	
-	    	User existingUser = new User();
-	        existingUser.setId(userId);
-	        existingUser.setName("Old Name");
-	        existingUser.setEmail("old@example.com");
+	    	
+	    	User existingUser = new User("Old Name", "old@example.com" );
+	    	existingUser.setId(userId);
+	    	
+	    	User updatedUser = new User("New Name", "new@example.com" );
+	    	updatedUser.setId(userId);
+	    	
+	        UserDTO updatedDTO = new UserDTO("New Name", "new@example.com");
 	        
-	        UserDTO updatedDTO = new UserDTO();
-	        updatedDTO.setName("New Name");
-	        updatedDTO.setEmail("new@example.com");
-	        
-	        User updatedUser = new User();
-	        updatedUser.setId(userId);
-	        updatedUser.setName("New Name");
-	        updatedUser.setEmail("new@example.com");
-	        
-	        UserDTO returnedDTO = new UserDTO();
-	        returnedDTO.setId(userId);
-	        returnedDTO.setName("New Name");
-	        returnedDTO.setEmail("new@example.com");
+	        UserDTO returnedDTO = new UserDTO("New Name", "new@example.com");
 	        
 	        when(userRepository.findById(userId)).thenReturn(Optional.of(existingUser));
 	        when(userRepository.save(existingUser)).thenReturn(updatedUser);
@@ -174,15 +167,13 @@ public class UserServiceTest {
 	    @Test
 	    void testUpdateUser_userNotFound() {
 	    	Long userId = 2L;
-	    	UserDTO userDTO = new UserDTO();
-	        userDTO.setName("Test");
-	        userDTO.setEmail("test@example.com");
+	    	UserDTO userDTO = new UserDTO("Test", "test@example.com");
 	    	
 	    	when(userRepository.findById(userId)).thenReturn(Optional.empty());
 	    	
-	    	assertThrows(UserNotFoundException.class, () -> {
-	    		userService.updateUser(userId, userDTO);
-	    	});
+	    	assertThrows(UserNotFoundException.class, 
+	    			() -> userService.updateUser(userId, userDTO)
+	    	);
 	    	
 	    	verify(userRepository).findById(userId);
 	    	verify(userRepository, never()).save(any());

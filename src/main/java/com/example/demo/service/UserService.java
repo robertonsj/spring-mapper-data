@@ -39,7 +39,7 @@ public class UserService {
 		return userMapper.toUserDTO(user);
 	}
 
-	
+	// CREATE USER
 	public UserDTO createUser(UserDTO userDTO) {
 		User user = userMapper.toUser(userDTO);
 		User savedUser = userRepository.save(user);	
